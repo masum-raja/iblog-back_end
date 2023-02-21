@@ -21,6 +21,7 @@ PostRouter.get("/:id", async (req, res) => {
     const data = await PostModel.findById({ _id: ID }).populate("author", [
       "name",
       "email",
+      "avatar_url",
     ]);
     res.send(data);
   } catch (err) {
