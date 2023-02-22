@@ -10,7 +10,7 @@ const authenticateToken = (req, res, next) => {
       next();
     });
   } else {
-    res.send({ message: "Please login first" });
+    res.status(400).send({ message: "Please login first" });
   }
 };
 
