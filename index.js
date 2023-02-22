@@ -20,9 +20,9 @@ app.use("/posts", PostRouter);
 app.listen(4500, async () => {
   try {
     await connection;
-    console.log("CONNECTED TO DB");
+    console.log("Connected to DB");
   } catch (error) {
     console.log(error);
   }
-  console.log("RUNNING TO PORT 4500");
+  console.log("Running at PORT 4500");
 });
