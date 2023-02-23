@@ -1,30 +1,68 @@
 const express = require("express");
+const path = require("path");
+const fs = require("fs");
 const bcrypt = require("bcrypt");
+const cloudinary = require("cloudinary");
+const multer=require("multer")
+require("dotenv").config()
+
 const { UserModel } = require("../models/User.model");
 var jwt = require("jsonwebtoken");
 const { authenticateToken } = require("../middleware/authenticateToken");
 
+
 const UserRouter = express.Router();
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+ const storage = multer.diskStorage({
+   destination: (req, res, cb) => {
+     cb(null, "Images");
+   },
+   filename: (req, file, cb) => {
+    //  console.log(file);
+     cb(null, Date.now() + path.extname(file.originalname));
+   },
+ });
+
+ const upload = multer({
+   storage: storage,
+   limits: { fileSize: 1024 * 1024 },
+ });
+
 // REGISTER
-UserRouter.post("/register", async (req, res) => {
+UserRouter.post("/register", upload.single("avatar_url"), async (req, res) => {
   const { name, avatar_url, email, password } = req.body;
   try {
-    bcrypt.hash(password, 3, async (err, hash) => {
-      const user_to_add = new UserModel({
-        name,
-        avatar_url,
-        email,
-        password: hash,
-      });
-      await user_to_add.save((err) => {
-        // CHECKING IS EMAIL UNIQUE
-        if (err) {
-          res.status(400).send({ message: "Email already exists" });
-        } else {
-          res.send({ message: "Account created" });
-        }
-      });
+    const filePath = req.file.path;
+    if (!filePath) {
+      return;
+    }
+    cloudinary.v2.uploader.upload(filePath, async (error, result) => {
+      if (result.secure_url) {
+        bcrypt.hash(password, 3, async (err, hash) => {
+          const user_to_add = new UserModel({
+            name,
+            avatar_url: result.secure_url,
+            email,
+            password: hash,
+          });
+          await user_to_add.save((err) => {
+            // CHECKING IS EMAIL UNIQUE
+            if (err) {
+              res.status(400).send({ message: "Email already exists" });
+            } else {
+              res.send({ message: "Account created" });
+            }
+          });
+        });
+      } else {
+        res.send(error.message);
+      }
     });
   } catch (error) {
     res.send({ message: "Something went wrong" });
