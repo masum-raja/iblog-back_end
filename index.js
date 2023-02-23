@@ -2,6 +2,7 @@ const express = require("express");
 const { connection } = require("./configs/db");
 const { UserRouter } = require("./routes/User.route");
 const { PostRouter } = require("./routes/Post.route");
+const { ProfileRouter } = require("./routes/Profile.route");
 require("dotenv").config();
 const cors = require("cors");
 
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 // ROUTES
 app.use("/users", UserRouter);
 app.use("/posts", PostRouter);
+app.use("/users/profile", ProfileRouter);
 
 app.listen(4500, async () => {
   try {

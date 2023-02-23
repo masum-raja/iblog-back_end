@@ -3,13 +3,12 @@ const path = require("path");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
-const multer=require("multer")
-require("dotenv").config()
+const multer = require("multer");
+require("dotenv").config();
 
 const { UserModel } = require("../models/User.model");
 var jwt = require("jsonwebtoken");
 const { authenticateToken } = require("../middleware/authenticateToken");
-
 
 const UserRouter = express.Router();
 
@@ -19,20 +18,20 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
- const storage = multer.diskStorage({
-   destination: (req, res, cb) => {
-     cb(null, "/tmp/");
-   },
-   filename: (req, file, cb) => {
-     console.log(file);
-     cb(null, Date.now() + path.extname(file.originalname));
-   },
- });
+const storage = multer.diskStorage({
+  destination: (req, res, cb) => {
+    cb(null, "/tmp/");
+  },
+  filename: (req, file, cb) => {
+    console.log(file);
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
 
- const upload = multer({
-   storage: storage,
-   limits: { fileSize: 1024 * 1024 },
- });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 },
+});
 
 // REGISTER
 UserRouter.post("/register", upload.single("avatar_url"), async (req, res) => {
@@ -66,7 +65,7 @@ UserRouter.post("/register", upload.single("avatar_url"), async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: "Something went wrong",error });
+    res.status(400).send({ message: "Something went wrong", error });
   }
 });
 
