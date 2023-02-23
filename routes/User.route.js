@@ -21,7 +21,7 @@ cloudinary.config({
 
  const storage = multer.diskStorage({
    destination: (req, res, cb) => {
-     cb(null, "Images");
+     cb(null, "./tmp");
    },
    filename: (req, file, cb) => {
     //  console.log(file);
