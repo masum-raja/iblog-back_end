@@ -65,8 +65,8 @@ UserRouter.post("/register", upload.single("avatar_url"), async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(400).send({ message: "Something went wrong" });
     console.log(error);
+    res.status(400).send({ message: "Something went wrong",error });
   }
 });
 
