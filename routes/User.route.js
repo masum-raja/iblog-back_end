@@ -21,10 +21,10 @@ cloudinary.config({
 
  const storage = multer.diskStorage({
    destination: (req, res, cb) => {
-     cb(null, "/tmp");
+     cb(null, "/tmp/");
    },
    filename: (req, file, cb) => {
-    //  console.log(file);
+     console.log(file);
      cb(null, Date.now() + path.extname(file.originalname));
    },
  });
@@ -65,7 +65,7 @@ UserRouter.post("/register", upload.single("avatar_url"), async (req, res) => {
       }
     });
   } catch (error) {
-    res.send({ message: "Something went wrong" });
+    res.status(400).send({ message: "Something went wrong" });
     console.log(error);
   }
 });
