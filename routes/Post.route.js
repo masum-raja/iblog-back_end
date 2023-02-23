@@ -7,7 +7,9 @@ const PostRouter = express.Router();
 
 PostRouter.get("/", async (req, res) => {
   try {
-    const data = await PostModel.find().populate("author", ["name", "email","avatar_url"]);
+    const data = await PostModel.find()
+      .populate("author", ["name", "email", "avatar_url"])
+      .sort({ createdAt: -1 });
     res.send(data);
   } catch (err) {
     console.log(err);
