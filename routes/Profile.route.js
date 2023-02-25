@@ -20,6 +20,22 @@ ProfileRouter.get("/", authenticateToken, async (req, res) => {
   }
 });
 
+ProfileRouter.get("/list", authenticateToken, async (req, res) => {
+  const userID = req.body.author;
+  try {
+    const user = await UserModel.findById({ _id: userID }).populate(
+      "saved_posts"
+    );
+    res.send({
+      user: { name: user.name, email: user.email, avatar_url: user.avatar_url },
+      saved_posts: user.saved_posts,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ message: "something went wrong", error });
+  }
+});
+
 ProfileRouter.get("/:email", async (req, res) => {
   const userEmail = req.params.email;
   try {
