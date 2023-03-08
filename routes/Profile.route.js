@@ -5,7 +5,7 @@ const { PostModel } = require("../models/Post.model");
 
 const ProfileRouter = express.Router();
 
-//
+// GET PROFILE  DATA
 ProfileRouter.get("/", authenticateToken, async (req, res) => {
   const userID = req.body.author;
   try {
@@ -20,6 +20,7 @@ ProfileRouter.get("/", authenticateToken, async (req, res) => {
   }
 });
 
+// GET PROFILE LIST DATA
 ProfileRouter.get("/list", authenticateToken, async (req, res) => {
   const userID = req.body.author;
   try {
@@ -38,6 +39,7 @@ ProfileRouter.get("/list", authenticateToken, async (req, res) => {
   }
 });
 
+// GET OTHER USER PROFILE
 ProfileRouter.get("/:email", async (req, res) => {
   const userEmail = req.params.email;
   try {
@@ -51,5 +53,29 @@ ProfileRouter.get("/:email", async (req, res) => {
     res.status(400).send({ message: "something went wrong", error });
   }
 });
+
+// DELETE USER POST
+ProfileRouter.delete(
+  "/delete-post/:post_id",
+  authenticateToken,
+  async (req, res) => {
+    const userID = req.body.author;
+    const postID = req.params.post_id;
+    try {
+      const post = await PostModel.findById({ _id: postID });
+      if (userID == post.author) {
+        await PostModel.findByIdAndDelete({ _id: postID });
+        const posts = await PostModel.find({ author: userID }).sort({
+          createdAt: -1,
+        });
+        res.send(posts);
+      } else {
+        res.status(401).send({ message: "Authorization failed" });
+      }
+    } catch (error) {
+      res.status(400).send({ message: "Internal server error", error: error });
+    }
+  }
+);
 
 module.exports = { ProfileRouter };
