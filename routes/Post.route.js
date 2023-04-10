@@ -75,4 +75,33 @@ PostRouter.delete("/delete/:id", authenticateToken, async (req, res) => {
   }
 });
 
+// LIKE POST
+PostRouter.put("/likes/:id", authenticateToken, async (req, res) => {
+  try {
+    const post = await PostModel.findById(req.params.id);
+
+    const isLiked = post.likes.filter(
+      (user) => user.toString() === req.body.author
+    );
+
+    if (isLiked.length == 0) {
+      post.likes.unshift(req.body.author);
+      await post.save();
+      res.send({ msg: "Liked successfully", likes: post.likes });
+    } else {
+      let removeIndex = post.likes
+        .map((user) => user.toString())
+        .indexOf(req.body.author);
+
+      post.likes.splice(removeIndex, 1);
+
+      await post.save();
+      res.send({ msg: "Unliked successfully", likes: post.likes });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Internal Server error");
+  }
+});
+
 module.exports = { PostRouter };

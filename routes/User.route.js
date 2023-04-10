@@ -83,6 +83,7 @@ UserRouter.post("/login", async (req, res) => {
             process.env.JWT_SECRET_KEY
           );
           res.send({
+            _id: user[0]._id,
             name: user[0].name,
             avatar_url: user[0].avatar_url,
             email: user[0].email,
@@ -142,7 +143,5 @@ UserRouter.patch("/saved/remove", authenticateToken, async (req, res) => {
     res.status(400).send({ error: error });
   }
 });
-
-UserRouter.get("/", async (req, res) => {});
 
 module.exports = { UserRouter };
