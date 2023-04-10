@@ -4,11 +4,12 @@ const { Schema, model } = mongoose;
 const PostSchema = Schema(
   {
     title: String,
-    category:String,
+    category: String,
     summary: String,
     content: String,
     cover: String,
     author: { type: Schema.Types.ObjectId, ref: "user" },
+    likes: [{ type: Schema.Types.ObjectId, ref: "user", default: [] }],
   },
   { versionKey: false, timestamps: true }
 );
